@@ -1,0 +1,966 @@
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descubre República Dominicana - Guía Turística</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 40px 0;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: 300;
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .search-bar {
+            max-width: 600px;
+            margin: 30px auto;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .places-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .place-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .place-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+
+        .place-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .place-card:hover .place-image {
+            transform: scale(1.05);
+        }
+
+        .place-info {
+            padding: 25px;
+        }
+
+        .place-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .place-location {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .place-description {
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .place-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .feature-tag {
+            background: linear-gradient(45deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .place-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00b894, #00a085);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #fdcb6e, #f39c12);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .rating {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.9);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: 600;
+            color: #f39c12;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-title {
+            font-size: 2.2em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .modal-location {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-section {
+            margin-bottom: 25px;
+        }
+
+        .info-title {
+            font-size: 1.3em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .info-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .info-list li:last-child {
+            border-bottom: none;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #74b9ff;
+        }
+
+        .weather-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .place-card {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .place-card:nth-child(1) { animation-delay: 0.1s; }
+        .place-card:nth-child(2) { animation-delay: 0.2s; }
+        .place-card:nth-child(3) { animation-delay: 0.3s; }
+        .place-card:nth-child(4) { animation-delay: 0.4s; }
+        .place-card:nth-child(5) { animation-delay: 0.5s; }
+        .place-card:nth-child(6) { animation-delay: 0.6s; }
+        .place-card:nth-child(7) { animation-delay: 0.7s; }
+        .place-card:nth-child(8) { animation-delay: 0.8s; }
+        .place-card:nth-child(9) { animation-delay: 0.9s; }
+        .place-card:nth-child(10) { animation-delay: 1.0s; }
+
+        /* Footer Styles */
+        footer {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            margin-top: 80px;
+            padding: 60px 0 30px 0;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-section h3 {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            color: #74b9ff;
+            font-weight: 600;
+        }
+
+        .footer-section p, .footer-section li {
+            color: #bdc3c7;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .footer-section ul li:hover {
+            color: #74b9ff;
+            padding-left: 10px;
+            cursor: pointer;
+        }
+
+        .footer-section ul li:last-child {
+            border-bottom: none;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-link {
+            display: inline-block;
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(45deg, #74b9ff, #0984e3);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 45px;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(116, 185, 255, 0.3);
+        }
+
+        .contact-info {
+            margin-top: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+
+        .contact-item i {
+            margin-right: 15px;
+            font-size: 1.2em;
+            color: #74b9ff;
+            width: 25px;
+        }
+
+        .newsletter {
+            display: none;
+        }
+
+        .newsletter-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 25px;
+            margin-bottom: 15px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            outline: none;
+        }
+
+        .newsletter-input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .newsletter-btn {
+            width: 100%;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #00b894, #00a085);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .newsletter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 184, 148, 0.3);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #95a5a6;
+        }
+
+        .footer-bottom p {
+            margin-bottom: 10px;
+        }
+
+        .footer-logo {
+            font-size: 2em;
+            font-weight: 300;
+            color: #74b9ff;
+            margin-bottom: 15px;
+        }
+
+        .stats-section {
+            background: rgba(255,255,255,0.05);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .stat-item {
+            display: inline-block;
+            margin: 10px 20px;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #74b9ff;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #bdc3c7;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5em; }
+            .places-grid { grid-template-columns: 1fr; }
+            .modal-content { width: 95%; }
+            .modal-body { padding: 20px; }
+            .footer-content { grid-template-columns: 1fr; }
+            .social-links { justify-content: center; }
+            .stat-item { margin: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🇩🇴 Descubre República Dominicana</h1>
+            <p class="subtitle">Los 12 destinos más espectaculares del Caribe</p>
+            
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="Busca tu destino ideal..." id="searchInput">
+                <button class="search-btn" onclick="searchPlaces()">🔍</button>
+            </div>
+        </header>
+
+        <div class="places-grid" id="placesGrid">
+            <!-- Los lugares se generarán con JavaScript -->
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <!-- Sección Acerca de -->
+            <div class="footer-section">
+                <div class="footer-logo">🇩🇴 Descubre RD</div>
+                <p>Tu guía definitiva para explorar los tesoros ocultos y destinos más espectaculares de República Dominicana. Descubre la magia del Caribe con información confiable y actualizada.</p>
+                
+                <div class="stats-section">
+                    <div class="stat-item">
+                        <span class="stat-number">12</span>
+                        <span class="stat-label">Destinos</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label">Actividades</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">4.7</span>
+                        <span class="stat-label">Calificación</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección Contacto -->
+            <div class="footer-section">
+                <h3>Contacto & Redes</h3>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i>📧</i>
+                        <span>info@descubrerdom.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i>📱</i>
+                        <span>+1 (809) 555-0123</span>
+                    </div>
+                    <div class="contact-item">
+                        <i>📍</i>
+                        <span>Santo Domingo, República Dominicana</span>
+                    </div>
+                </div>
+
+                <div class="newsletter">
+                    <h4 style="margin-bottom: 15px; color: #74b9ff;">📬 Newsletter</h4>
+                    <p style="font-size: 0.9em; margin-bottom: 15px;">Recibe las mejores ofertas y destinos nuevos</p>
+                    <input type="email" class="newsletter-input" placeholder="Tu email aquí...">
+                    <button class="newsletter-btn" onclick="subscribeNewsletter()">Suscribirse</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 Descubre República Dominicana. Todos los derechos reservados.</p>
+            <p>Hecho con ❤️ para promover el turismo dominicano | <a href="#" style="color: #74b9ff;">Términos de Uso</a> | <a href="#" style="color: #74b9ff;">Política de Privacidad</a></p>
+        </div>
+    </footer>
+
+    <!-- Modal para detalles -->
+    <div class="modal" id="placeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img class="modal-image" id="modalImage" src="" alt="">
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const places = [
+            {
+                id: 1,
+                title: "Punta Cana",
+                location: "La Altagracia",
+                image: "",
+                description: "Playas de arena blanca y aguas cristalinas. El paraíso tropical perfecto con resorts de lujo y actividades acuáticas infinitas.",
+                features: ["Playas vírgenes", "Resorts todo incluido", "Deportes acuáticos", "Vida nocturna"],
+                rating: "4.8",
+                coordinates: "18.5601,-68.3725",
+                weather: "Tropical cálido, 28°C promedio",
+                bestTime: "Diciembre - Abril",
+                activities: ["Snorkeling", "Windsurf", "Golf", "Spa", "Catamaran"],
+                tips: "Visita Hoyo Azul para una experiencia única de cenote natural",
+                cost: "$$ - Resort de lujo"
+            },
+            {
+                id: 2,
+                title: "Isla Saona",
+                location: "Parque Nacional del Este",
+                image: "https://media-cdn.tripadvisor.com/media/photo-s/1a/b4/9e/07/caption.jpg",
+                description: "Isla paradisíaca con aguas color turquesa, palmas de coco y arena blanquísima. Una joya natural protegida.",
+                features: ["Reserva natural", "Aguas cristalinas", "Estrellas de mar", "Excursiones en catamarán"],
+                rating: "4.9",
+                coordinates: "18.1667,-68.7333",
+                weather: "Brisa marina constante, 27°C",
+                bestTime: "Todo el año",
+                activities: ["Buceo", "Fotografía", "Relajación", "Observación marina"],
+                tips: "Las piscinas naturales son espectaculares al mediodía",
+                cost: "$ - Excursión de día"
+            },
+            {
+                id: 3,
+                title: "Salto de Damajagua",
+                location: "Puerto Plata",
+                image: "https://www.godominicanrepublic.com/wp-content/uploads/2017/12/shutterstock_1035273703-min.jpg",
+                description: "27 cascadas naturales donde puedes saltar, deslizarte y nadar en piscinas naturales de agua dulce cristalina.",
+                features: ["27 cascadas", "Aventura extrema", "Piscinas naturales", "Guías expertos"],
+                rating: "4.7",
+                coordinates: "19.7500,-70.7167",
+                weather: "Clima montañoso fresco, 24°C",
+                bestTime: "Mayo - Octubre",
+                activities: ["Salto de cascadas", "Senderismo", "Natación", "Fotografía"],
+                tips: "Usa zapatos acuáticos y lleva cámara sumergible",
+                cost: "$ - Tour de aventura"
+            },
+            {
+                id: 4,
+                title: "Zona Colonial Santo Domingo",
+                location: "Distrito Nacional",
+                image: "https://www.godominicanrepublic.com/wp-content/uploads/2020/02/zona-colonial-santo-domingo-calle-las-damas.jpg",
+                description: "La primera ciudad europea del Nuevo Mundo. Calles empedradas, arquitectura colonial y rica historia dominicana.",
+                features: ["Patrimonio UNESCO", "Arquitectura colonial", "Museos", "Gastronomía"],
+                rating: "4.6",
+                coordinates: "18.4655,-69.9312",
+                weather: "Urbano tropical, 29°C",
+                bestTime: "Noviembre - Abril",
+                activities: ["Tours históricos", "Museos", "Gastronomía", "Vida nocturna"],
+                tips: "Camina por la Calle Las Damas, la primera calle pavimentada de América",
+                cost: "$ - Accesible"
+            },
+            {
+                id: 5,
+                title: "Bahía de las Águilas",
+                location: "Pedernales",
+                image: "https://www.godominicanrepublic.com/wp-content/uploads/2017/12/bahia-de-las-aguilas-1.jpg",
+                description: "La playa más virgen del Caribe. Arena dorada, aguas turquesas y naturaleza intocada en el extremo sur de la isla.",
+                features: ["Playa virgen", "Área protegida", "Naturaleza intocada", "Aguas prístinas"],
+                rating: "4.9",
+                coordinates: "17.8833,-71.6500",
+                weather: "Desértico costero, 30°C",
+                bestTime: "Noviembre - Mayo",
+                activities: ["Relajación", "Fotografía", "Buceo", "Observación de aves"],
+                tips: "Lleva agua y protección solar, es un área remota",
+                cost: "$ - Excursión especial"
+            },
+            {
+                id: 6,
+                title: "Laguna Gri Gri",
+                location: "Río San Juan",
+                image: "https://www.godominicanrepublic.com/wp-content/uploads/2017/12/laguna-gri-gri-mangroves.jpg",
+                description: "Laguna de manglares con túneles naturales y cavernas. Un ecosistema único lleno de vida marina y aves tropicales.",
+                features: ["Manglares", "Cavernas", "Ecosistema único", "Tours en bote"],
+                rating: "4.5",
+                coordinates: "19.6167,-70.0667",
+                weather: "Húmedo tropical, 26°C",
+                bestTime: "Diciembre - Junio",
+                activities: ["Paseos en bote", "Observación de fauna", "Snorkeling", "Eco-turismo"],
+                tips: "Los manatíes pueden verse en las mañanas temprano",
+                cost: "$ - Tour ecológico"
+            },
+            {
+                id: 7,
+                title: "Pico Duarte",
+                location: "Cordillera Central",
+                image: "https://www.godominicanrepublic.com/wp-content/uploads/2017/12/pico-duarte-highest-peak-caribbean.jpg",
+                description: "La montaña más alta del Caribe (3,087m). Bosques de pinos, clima fresco y vistas espectaculares de toda la isla.",
+                features: ["Pico más alto", "Senderismo", "Bosques de pinos", "Vistas panorámicas"],
+                rating: "4.4",
+                coordinates: "19.0231,-70.9979",
+                weather: "Montañoso frío, 15°C en cima",
+                bestTime: "Diciembre - Marzo",
+                activities: ["Montañismo", "Camping", "Fotografía", "Observación estelar"],
+                tips: "Requiere 2-3 días, lleva ropa de abrigo",
+                cost: "$$ - Expedición guiada"
+            },
+            {
+                id: 8,
+                title: "Cayo Levantado",
+                location: "Samaná",
+                image: "https://www.godominicanrepublic.com/wp-content/uploads/2017/12/cayo-levantado-bacardi-island.jpg",
+                description: "Pequeña isla tropical perfecta. Conocida como 'Bacardí Island' por su belleza caribeña icónica y playas perfectas.",
+                features: ["Isla pequeña", "Playas perfectas", "Aguas cálidas", "Excursiones"],
+                rating: "4.8",
+                coordinates: "19.2167,-69.4167",
+                weather: "Brisa marina, 28°C",
+                bestTime: "Enero - Marzo (avistamiento ballenas)",
+                activities: ["Relajación", "Natación", "Avistamiento ballenas", "Fotografía"],
+                tips: "Combina con avistamiento de ballenas jorobadas",
+                cost: "$ - Excursión de día"
+            },
+            {
+                id: 9,
+                title: "Los Haitises",
+                location: "Parque Nacional",
+                image: "https://www.godominicanrepublic.com/wp-content/uploads/2017/12/los-haitises-national-park-mangroves.jpg",
+                description: "Bosque tropical húmedo con formaciones rocosas únicas, cuevas con arte taíno y manglares espectaculares.",
+                features: ["Formaciones rocosas", "Arte taíno", "Manglares", "Biodiversidad"],
+                rating: "4.6",
+                coordinates: "19.0500,-69.6167",
+                weather: "Húmedo tropical, 25°C",
+                bestTime: "Diciembre - Abril",
+                activities: ["Eco-turismo", "Cuevas", "Observación fauna", "Kayak"],
+                tips: "Las cuevas tienen arte indígena de 1,200 años",
+                cost: "$ - Tour ecológico"
+            },
+            {
+                id: 10,
+                title: "Playa Rincón",
+                location: "Samaná",
+                image: "https://www.godominicanrepublic.com/wp-content/uploads/2017/12/playa-rincon-samana.jpg",
+                description: "Una de las playas más hermosas del mundo. Arena blanca, agua cristalina y palmeras que crean el escenario perfecto.",
+                features: ["Playa mundialmente famosa", "Arena blanca", "Agua cristalina", "Ambiente natural"],
+                rating: "4.9",
+                coordinates: "19.2333,-69.2500",
+                weather: "Tropical perfecto, 27°C",
+                bestTime: "Todo el año",
+                activities: ["Relajación", "Natación", "Fotografía", "Caminatas"],
+                tips: "Llega temprano para tener la playa casi para ti solo",
+                cost: "$ - Acceso y servicios"
+            },
+            {
+                id: 11,
+                title: "Playa Cofresí",
+                location: "Puerto Plata",
+                image: "https://www.godominicanrepublic.com/wp-content/uploads/2017/12/cofresi-beach-puerto-plata.jpg",
+                description: "Playa protegida con aguas tranquilas, perfecta para familias. Hogar del famoso Ocean World y actividades con delfines.",
+                features: ["Aguas tranquilas", "Familiar", "Ocean World", "Actividades marinas"],
+                rating: "4.5",
+                coordinates: "19.8333,-70.6167",
+                weather: "Costero tropical, 27°C",
+                bestTime: "Todo el año",
+                activities: ["Nado con delfines", "Snorkeling", "Familiar", "Parque acuático"],
+                tips: "Ideal para niños por sus aguas calmas y poco profundas",
+                cost: "$ - Entrada y actividades"
+            },
+            {
+                id: 12,
+                title: "Cueva de las Maravillas",
+                location: "San Pedro de Macorís",
+                image: "https://www.godominicanrepublic.com/wp-content/uploads/2017/12/cueva-de-las-maravillas-cave-formations.jpg",
+                description: "Sistema de cuevas subterráneas con formaciones calcáreas espectaculares, arte rupestre taíno y recorridos iluminados.",
+                features: ["Cuevas subterráneas", "Arte taíno", "Formaciones calcáreas", "Tours guiados"],
+                rating: "4.7",
+                coordinates: "18.4167,-69.0333",
+                weather: "Subterráneo fresco, 22°C",
+                bestTime: "Todo el año",
+                activities: ["Espeleología", "Tours guiados", "Fotografía", "Historia"],
+                tips: "Temperatura constante de 22°C, lleva chaqueta ligera",
+                cost: "$ - Entrada y tour"
+            }
+        ];
+
+        function renderPlaces(placesToRender = places) {
+            const grid = document.getElementById('placesGrid');
+            grid.innerHTML = '';
+
+            placesToRender.forEach(place => {
+                const card = document.createElement('div');
+                card.className = 'place-card';
+                card.onclick = () => openModal(place);
+                
+                card.innerHTML = `
+                    <div class="rating">⭐ ${place.rating}</div>
+                    <img src="${place.image}" alt="${place.title}" class="place-image">
+                    <div class="place-info">
+                        <h3 class="place-title">${place.title}</h3>
+                        <p class="place-location">📍 ${place.location}</p>
+                        <p class="place-description">${place.description}</p>
+                        <div class="place-features">
+                            ${place.features.map(feature => `<span class="feature-tag">${feature}</span>`).join('')}
+                        </div>
+                        <div class="place-actions">
+                            <button class="btn btn-primary" onclick="event.stopPropagation(); openMap('${place.coordinates}', '${place.title}')">📍 Ver en Mapa</button>
+                            <button class="btn btn-secondary" onclick="event.stopPropagation(); openModal(${JSON.stringify(place).replace(/"/g, '&quot;')})">ℹ️ Más Info</button>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function openModal(place) {
+            const modal = document.getElementById('placeModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalBody = document.getElementById('modalBody');
+            
+            modalImage.src = place.image;
+            modalImage.alt = place.title;
+            
+            modalBody.innerHTML = `
+                <h2 class="modal-title">${place.title}</h2>
+                <p class="modal-location">📍 ${place.location}</p>
+                
+                <div class="highlight">
+                    <strong>💡 Consejo del Experto:</strong> ${place.tips}
+                </div>
+                
+                <div class="weather-info">
+                    <div class="info-title">🌤️ Información Climática</div>
+                    <p><strong>Clima:</strong> ${place.weather}</p>
+                    <p><strong>Mejor época para visitar:</strong> ${place.bestTime}</p>
+                </div>
+                
+                <div class="info-section">
+                    <div class="info-title">🎯 Actividades Principales</div>
+                    <div class="place-features">
+                        ${place.activities.map(activity => `<span class="feature-tag">${activity}</span>`).join('')}
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <div class="info-title">📋 Información Práctica</div>
+                    <ul class="info-list">
+                        <li><strong>Calificación:</strong> <span>⭐ ${place.rating}/5.0</span></li>
+                        <li><strong>Presupuesto:</strong> <span>${place.cost}</span></li>
+                        <li><strong>Ubicación:</strong> <span>${place.location}</span></li>
+                        <li><strong>Mejor época:</strong> <span>${place.bestTime}</span></li>
+                    </ul>
+                </div>
+                
+                <div class="place-actions" style="margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="openMap('${place.coordinates}', '${place.title}')">🗺️ Abrir en Google Maps</button>
+                    <button class="btn btn-secondary" onclick="sharePlace('${place.title}')">📤 Compartir Destino</button>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('placeModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function openMap(coordinates, placeName) {
+            const [lat, lng] = coordinates.split(',');
+            const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}&query_place_id=${encodeURIComponent(placeName)}`;
+            window.open(url, '_blank');
+        }
+
+        function sharePlace(placeName) {
+            if (navigator.share) {
+                navigator.share({
+                    title: `Descubre ${placeName} en República Dominicana`,
+                    text: `¡Mira este increíble destino en República Dominicana: ${placeName}!`,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback para navegadores que no soportan Web Share API
+                const text = `¡Descubre ${placeName} en República Dominicana! ${window.location.href}`;
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('¡Enlace copiado al portapapeles!');
+                });
+            }
+        }
+
+        function searchPlaces() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredPlaces = places.filter(place => 
+                place.title.toLowerCase().includes(searchTerm) ||
+                place.location.toLowerCase().includes(searchTerm) ||
+                place.description.toLowerCase().includes(searchTerm) ||
+                place.features.some(feature => feature.toLowerCase().includes(searchTerm))
+            );
+            
+            renderPlaces(filteredPlaces);
+            
+            if (filteredPlaces.length === 0) {
+                document.getElementById('placesGrid').innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; color: white; padding: 50px;">
+                        <h3>No se encontraron destinos 😔</h3>
+                        <p>Intenta con otros términos como "playa", "montaña", "aventura" o el nombre de una provincia.</p>
+                        <button class="btn btn-primary" onclick="renderPlaces(); document.getElementById('searchInput').value = '';" style="margin-top: 20px;">
+                            Ver todos los destinos
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchPlaces();
+            }
+        });
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('placeModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Cerrar modal con ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Inicializar la página
+        renderPlaces();
+    </script>
+</body>
+</html>
